@@ -81,7 +81,7 @@ def start_game():
     start_time = time.time()
 
 
-grid_size = 2
+grid_size = 10
 
 # Create the main window
 window = tk.Tk()
@@ -121,13 +121,16 @@ check_button.pack(side="left", padx=5)
 # Calculate the required window size
 grid_width = grid_size * 50  # Assuming each cell is 50 pixels wide
 grid_height = grid_size * 30  # Assuming each cell is 30 pixels high
+button_frame.update()
 button_frame_height = max(start_button.winfo_height(),
                           check_button.winfo_height())
-button_frame_width = start_button.winfo_width() + check_button.winfo_width()
-window_width = max(grid_width, button_frame_width) + 20  # Adding padding
+button_frame_width = button_frame.winfo_width()
+window_width = grid_width + button_frame_width + 20  # Adding padding
 window_height = grid_height + button_frame_height + \
     80  # Adding padding and spacing
 
+print(
+    f'''Grid width: {grid_width}, Grid height: {grid_height}, Button Frame width: {button_frame_width}, Button Frame height: {button_frame_height}''')
 # Set the window size
 window.geometry(f"{window_width}x{window_height}")
 
