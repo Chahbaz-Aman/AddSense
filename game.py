@@ -1,4 +1,5 @@
 import random
+import csv
 import time
 import tkinter as tk
 from tkinter import ttk
@@ -28,6 +29,23 @@ def check_answers():
     if correct:
         result_label.config(
             text=f"Congratulations! You completed the game in {elapsed_time} seconds.")
+        system_time = time.strftime("%Y-%m-%d %H:%M:%S")
+        session_time = elapsed_time
+        time_per_sum = elapsed_time / (grid_size * grid_size)
+
+        # Update the CSV log file
+        log_data = [system_time, session_time, time_per_sum]
+
+        try:
+            with open("log_file.csv", "a", newline="") as file:
+                writer = csv.writer(file)
+                writer.writerow(log_data)
+        except IOError:
+            with open("log_file.csv", "w", newline="") as file:
+                writer = csv.writer(file)
+                writer.writerow(
+                    ["System Time", "Session Time", "Time per Sum"])
+                writer.writerow(log_data)
     else:
         result_label.config(text="Sorry, your answers are incorrect.")
 
