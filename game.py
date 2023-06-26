@@ -27,8 +27,6 @@ def check_answers():
     elapsed_time = round(end_time - start_time, 2)
 
     if correct:
-        result_label.config(
-            text=f"Congratulations! You completed the game in {elapsed_time} seconds.")
         system_time = time.strftime("%Y-%m-%d %H:%M:%S")
         session_time = elapsed_time
         time_per_sum = elapsed_time / (grid_size * grid_size)
@@ -47,11 +45,15 @@ def check_answers():
                     ["System Time", "Session Time", "Time per Sum"])
                 writer.writerow(log_data)
     else:
-        result_label.config(text="Sorry, your answers are incorrect.")
+        pass
 
 
 def create_grid():
-    global entries
+    global entries, column_headers, row_indices, grid_size
+
+    # Set up the grid and initialize variables
+    column_headers = [random.randint(10, 99) for _ in range(grid_size)]
+    row_indices = [random.randint(10, 99) for _ in range(grid_size)]
 
     # Create column headers
     for j in range(grid_size):
@@ -79,11 +81,7 @@ def start_game():
     start_time = time.time()
 
 
-# Set up the grid and initialize variables
 grid_size = 2
-column_headers = [random.randint(10, 99) for _ in range(grid_size)]
-row_indices = [random.randint(10, 99) for _ in range(grid_size)]
-grid = [[0] * grid_size for _ in range(grid_size)]
 
 # Create the main window
 window = tk.Tk()
@@ -119,18 +117,16 @@ check_button = ttk.Button(
     button_frame, text="Check Answers", command=check_answers)
 check_button.pack(side="left", padx=5)
 
-# Create a label to display the result
-result_label = ttk.Label(window)
-result_label.pack(pady=10)
 
 # Calculate the required window size
 grid_width = grid_size * 50  # Assuming each cell is 50 pixels wide
 grid_height = grid_size * 30  # Assuming each cell is 30 pixels high
 button_frame_height = max(start_button.winfo_height(),
                           check_button.winfo_height())
-window_width = grid_width + 20  # Adding padding
+button_frame_width = start_button.winfo_width() + check_button.winfo_width()
+window_width = max(grid_width, button_frame_width) + 20  # Adding padding
 window_height = grid_height + button_frame_height + \
-    result_label.winfo_height() + 80  # Adding padding and spacing
+    80  # Adding padding and spacing
 
 # Set the window size
 window.geometry(f"{window_width}x{window_height}")
