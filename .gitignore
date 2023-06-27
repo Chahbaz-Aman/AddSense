@@ -1,2 +1,5 @@
 .vscode/
+.ipynb_checkpoints/
 log_file.csv
+boxplot.png
+*.ipynb
