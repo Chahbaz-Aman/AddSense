@@ -50,6 +50,7 @@ def check_answers():
 
 def create_grid():
     global entries, column_headers, row_indices, grid_size
+    grid_size = int(grid_size_selector.get())
 
     # Set up the grid and initialize variables
     column_headers = [random.randint(10, 99) for _ in range(grid_size)]
@@ -75,10 +76,29 @@ def create_grid():
             entries.append(entry)
 
 
+def clear_grid():
+    # Remove any existing grid elements
+    for widget in frame.winfo_children():
+        widget.destroy()
+
+
 def start_game():
+    clear_grid()
     create_grid()
     global start_time
     start_time = time.time()
+
+
+def increase_size():
+    current_size = int(grid_size_selector.get())
+    if current_size < max_size:
+        grid_size_selector.set(str(current_size + 2))
+
+
+def decrease_size():
+    current_size = int(grid_size_selector.get())
+    if current_size > min_size:
+        grid_size_selector.set(str(current_size - 2))
 
 
 grid_size = 10
@@ -108,6 +128,32 @@ frame.pack(padx=10, pady=10)
 button_frame = ttk.Frame(window)
 button_frame.pack()
 
+# Define the minimum and maximum grid sizes
+min_size = 2
+max_size = 10
+
+# Create the grid size variable
+grid_size_selector = tk.StringVar()
+grid_size_selector.set(str(max_size))
+
+# Create the grid size label
+size_label = ttk.Label(button_frame, text="Grid Size:")
+size_label.pack(side="left", padx=(0, 5))
+
+# Create the decrease button
+decrease_button = ttk.Button(
+    button_frame, text="\u25bc", command=decrease_size)
+decrease_button.pack(side="left")
+
+# Create the grid size display label
+size_display_label = ttk.Label(button_frame, textvariable=grid_size_selector)
+size_display_label.pack(side="left")
+
+# Create the increase button
+increase_button = ttk.Button(
+    button_frame, text="\u25b2", command=increase_size)
+increase_button.pack(side="left")
+
 # Create a button to start the game
 start_button = ttk.Button(button_frame, text="Start Game", command=start_game)
 start_button.pack(side="left", padx=5)
@@ -119,8 +165,8 @@ check_button.pack(side="left", padx=5)
 
 
 # Calculate the required window size
-grid_width = grid_size * 50  # Assuming each cell is 50 pixels wide
-grid_height = grid_size * 30  # Assuming each cell is 30 pixels high
+grid_width = 0 * 50  # Assuming each cell is 50 pixels wide
+grid_height = 10 * 30  # Assuming each cell is 30 pixels high
 button_frame.update()
 button_frame_height = max(start_button.winfo_height(),
                           check_button.winfo_height())
@@ -129,8 +175,8 @@ window_width = grid_width + button_frame_width + 20  # Adding padding
 window_height = grid_height + button_frame_height + \
     80  # Adding padding and spacing
 
-print(
-    f'''Grid width: {grid_width}, Grid height: {grid_height}, Button Frame width: {button_frame_width}, Button Frame height: {button_frame_height}''')
+# print(
+#     f'''Grid width: {grid_width}, Grid height: {grid_height}, Button Frame width: {button_frame_width}, Button Frame height: {button_frame_height}''')
 # Set the window size
 window.geometry(f"{window_width}x{window_height}")
 
