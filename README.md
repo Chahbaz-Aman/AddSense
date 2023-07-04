@@ -1,6 +1,6 @@
 # AddSense
 A simple app to help you get better at two-digit addition.<br>
-Ideal for students prepating for aptitude exams like CAT
+Ideal for students prepating for aptitude exams.
 
 ## Setup instructions
 1. Clone this repo into your local system
