@@ -27,22 +27,21 @@ def check_answers():
     elapsed_time = round(end_time - start_time, 2)
 
     if correct:
-        system_time = time.strftime("%Y-%m-%d %H:%M:%S")
+        system_time = time.strftime("%d-%m-%Y %H:%M")
         session_time = elapsed_time
         time_per_sum = elapsed_time / (grid_size * grid_size)
 
         # Update the CSV log file
-        log_data = [system_time, session_time, time_per_sum]
+        log_data = [str(system_time), str(session_time), str(time_per_sum)]
 
         try:
             with open("log_file.csv", "a", newline="") as file:
-                writer = csv.writer(file)
-                writer.writerow(log_data)
+                # writer = csv.writer(file)
+                file.write(','.join(log_data)+'\n')
+                # writer.writerow(log_data)
         except IOError:
             with open("log_file.csv", "w", newline="") as file:
                 writer = csv.writer(file)
-                writer.writerow(
-                    ["System Time", "Session Time", "Time per Sum"])
                 writer.writerow(log_data)
     else:
         pass
