@@ -12,7 +12,8 @@ import pandas as pd
 # In[84]:
 
 
-df = pd.read_csv('log_file.csv', header = None, names=['DateTime','Total_Time','Time_per_Sum'])
+df = pd.read_csv('log_file.csv', header=None, names=[
+                 'DateTime', 'Total_Time', 'Time_per_Sum'])
 
 
 # In[85]:
@@ -34,8 +35,11 @@ color_dict = {median: color for median, color in zip(medians, color_palette)}
 
 
 _, ax = plt.subplots(1, 1, figsize=(10, 5))
-sns.boxplot(x='Date', y='Time_per_Sum', data=df, palette=color_dict.values(), ax=ax)
-ax.set_title(f'Two-Digit Addition Speed | Current: {df["Time_per_Sum"].iloc[-1]} sec')
+sns.boxplot(x='Date', y='Time_per_Sum', data=df,
+            palette=color_dict.values(), ax=ax)
+ax.set_title(
+    f'Two-Digit Addition Speed | Current: {df["Time_per_Sum"].iloc[-1]} sec')
+ax.set_xticklabels(df['Date'].unique(), rotation=45)
 
 # Set the background color of the plot area
 ax.spines['bottom'].set_color('white')
@@ -65,7 +69,3 @@ plt.savefig('boxplot.png', dpi=300, bbox_inches='tight')
 
 
 # In[ ]:
-
-
-
-
