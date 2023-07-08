@@ -39,7 +39,7 @@ _, ax = plt.subplots(1, 1, figsize=(10, 5))
 sns.boxplot(x='Date', y='Time_per_Sum', data=df,
             palette=color_dict.values(), ax=ax)
 ax.set_title(
-    f'Two-Digit Addition Speed | Current: {df["Time_per_Sum"].iloc[-1]} sec')
+    f'Two-Digit Addition Speed | Current: {round(df["Time_per_Sum"].iloc[-1],1)} sec')
 ax.set_xticklabels(df['DateTicks'].unique(), rotation=45)
 
 # Set the background color of the plot area
