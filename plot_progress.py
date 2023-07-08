@@ -19,7 +19,8 @@ df = pd.read_csv('log_file.csv', header=None, names=[
 # In[85]:
 
 
-df['DateTime'] = pd.to_datetime(df['DateTime'])
+df['DateTime'] = pd.to_datetime(df['DateTime'], format="%d-%m-%Y %H:%M")
+df['DateTicks'] = df['DateTime'].dt.strftime('%d %b-%y')
 df['Date'] = df['DateTime'].apply(lambda d: d.date())
 
 
@@ -39,7 +40,7 @@ sns.boxplot(x='Date', y='Time_per_Sum', data=df,
             palette=color_dict.values(), ax=ax)
 ax.set_title(
     f'Two-Digit Addition Speed | Current: {df["Time_per_Sum"].iloc[-1]} sec')
-ax.set_xticklabels(df['Date'].unique(), rotation=45)
+ax.set_xticklabels(df['DateTicks'].unique(), rotation=45)
 
 # Set the background color of the plot area
 ax.spines['bottom'].set_color('white')
