@@ -7,22 +7,22 @@ from ttkthemes import ThemedStyle
 
 
 def check_answers():
-    player_sums = [int(entry.get()) if entry.get() !=
-                   '' else 9999 for entry in entries]
+    player_sums = [int(entry.get()) if entry.get().isnumeric()
+                   else 9999 for entry in entries]
     totals_row = [x+y for x in row_indices for y in column_headers]
-    print(f'''Player entered: {player_sums}
-    Correct answers are:{totals_row}
-    '''
-          )
-
+    # print(f'''Player entered: {player_sums}
+    # Correct answers are:{totals_row}
+    # '''
+    #       )
+    correct = all(player_sums[j] == totals_row[j]
+                  for j in range(grid_size * grid_size))
+    wrong = []
     for i, entry in enumerate(entries):
         if player_sums[i] == totals_row[i]:  # Use modulus to get the correct column index
             entry.config(style="CorrectEntry.TEntry")
         else:
-            entry.config(style="WrongEntry.TEntry")
+            wrong.append(entry)
 
-    correct = all(player_sums[j] == totals_row[j]
-                  for j in range(grid_size * grid_size))
     end_time = time.time()
     elapsed_time = round(end_time - start_time, 2)
 
@@ -31,20 +31,22 @@ def check_answers():
         session_time = elapsed_time
         time_per_sum = elapsed_time / (grid_size * grid_size)
 
+        message_frame.config(
+            text=f"Congratulations! You averaged {round(time_per_sum,2)} seconds!")
+
         # Update the CSV log file
         log_data = [str(system_time), str(session_time), str(time_per_sum)]
 
         try:
             with open("log_file.csv", "a", newline="") as file:
-                # writer = csv.writer(file)
                 file.write(','.join(log_data)+'\n')
-                # writer.writerow(log_data)
         except IOError:
             with open("log_file.csv", "w", newline="") as file:
                 writer = csv.writer(file)
                 writer.writerow(log_data)
     else:
-        pass
+        wrong[0].delete(0, '')
+        wrong[0].focus()
 
 
 def create_grid():
@@ -72,6 +74,8 @@ def create_grid():
         for j in range(grid_size):
             entry = ttk.Entry(frame, width=5, style="Default.TEntry")
             entry.grid(row=i+1, column=j+1)
+            entry.config(style="WrongEntry.TEntry")
+            entry.bind("<FocusOut>", lambda event: check_answers())
             entries.append(entry)
 
 
@@ -82,9 +86,11 @@ def clear_grid():
 
 
 def start_game():
-    clear_grid()
-    create_grid()
     global start_time
+    clear_grid()
+    message_frame.config(text="Now Playing")
+    create_grid()
+    entries[0].focus()
     start_time = time.time()
 
 
@@ -104,7 +110,7 @@ grid_size = 10
 
 # Create the main window
 window = tk.Tk()
-window.title("Grid Game")
+window.title("AddSense")
 
 # Apply the themed style to the window
 style = ThemedStyle(window)
@@ -118,14 +124,26 @@ style.configure("WrongEntry.TEntry", fieldbackground="#FFCCCC")
 style.configure("ColumnHeader.TLabel",
                 background="lightgray", foreground="black")
 style.configure("RowIndex.TLabel", background="lightgray", foreground="black")
+style.configure("Message.TLabel", foreground="green", background="#F0F0F0",
+                font=("Arial", 14, "bold"))
+style.configure("FrameElements.TFrame", background="#F0F0F0")
+
+# Create a label to display the message
+message_frame = ttk.Label(
+    window, text="Let's test those two-digit addition skills!", style="Message.TLabel")
+message_frame.pack(pady=10)
 
 # Create a frame to hold the grid
 frame = ttk.Frame(window)
 frame.pack(padx=10, pady=10)
 
 # Create a button frame to hold the buttons
-button_frame = ttk.Frame(window)
+button_frame = ttk.Frame(window, style="FrameElements.TFrame")
 button_frame.pack()
+
+# Create a button to start the game
+start_button = ttk.Button(button_frame, text="New Game", command=start_game)
+start_button.pack(side="left", padx=5)
 
 # Define the minimum and maximum grid sizes
 min_size = 2
@@ -153,31 +171,23 @@ increase_button = ttk.Button(
     button_frame, text="\u25b2", command=increase_size)
 increase_button.pack(side="left")
 
-# Create a button to start the game
-start_button = ttk.Button(button_frame, text="Start Game", command=start_game)
-start_button.pack(side="left", padx=5)
-
-# Create a button to check answers
-check_button = ttk.Button(
-    button_frame, text="Check Answers", command=check_answers)
-check_button.pack(side="left", padx=5)
-
-
 # Calculate the required window size
 grid_width = 0 * 50  # Assuming each cell is 50 pixels wide
 grid_height = 10 * 30  # Assuming each cell is 30 pixels high
 button_frame.update()
-button_frame_height = max(start_button.winfo_height(),
-                          check_button.winfo_height())
+button_frame_height = start_button.winfo_height()
 button_frame_width = button_frame.winfo_width()
-window_width = grid_width + button_frame_width + 20  # Adding padding
+window_width = grid_width + button_frame_width + 160  # Adding padding
 window_height = grid_height + button_frame_height + \
-    80  # Adding padding and spacing
+    150  # Adding padding and spacing
 
-# print(
-#     f'''Grid width: {grid_width}, Grid height: {grid_height}, Button Frame width: {button_frame_width}, Button Frame height: {button_frame_height}''')
 # Set the window size
 window.geometry(f"{window_width}x{window_height}")
+
+# Bind the spacebar key press event to check_answers()
+window.bind("<space>", lambda event: start_game())
+window.bind("<KeyPress-Up>", lambda event: increase_size())
+window.bind("<KeyPress-Down>", lambda event: decrease_size())
 
 # Start the Tkinter event loop
 window.mainloop()
