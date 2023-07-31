@@ -1,6 +1,7 @@
 import random
 import csv
 import time
+import pandas as pd
 import tkinter as tk
 from tkinter import ttk
 from ttkthemes import ThemedStyle
@@ -88,7 +89,7 @@ def clear_grid():
 def start_game():
     global start_time
     clear_grid()
-    message_frame.config(text="Now Playing")
+    message_frame.config(text=f"Now Playing | Set Number: {runs+1}")
     create_grid()
     entries[0].focus()
     start_time = time.time()
@@ -125,12 +126,24 @@ style.configure("ColumnHeader.TLabel",
                 background="lightgray", foreground="black")
 style.configure("RowIndex.TLabel", background="lightgray", foreground="black")
 style.configure("Message.TLabel", foreground="green", background="#F0F0F0",
-                font=("Arial", 14, "bold"))
+                font=("Arial", 14, "bold"), justify="center")
 style.configure("FrameElements.TFrame", background="#F0F0F0")
+
+# Count number of runs today
+try:
+    df = pd.read_csv('log_file.csv', header=None, names=[
+        'DateTime', 'Total_Time', 'Time_per_Sum'])
+    df['DateTime'] = pd.to_datetime(df['DateTime'], format="%d-%m-%Y %H:%M")
+    df['DateTicks'] = df['DateTime'].dt.strftime('%d %b-%y')
+    system_date = time.strftime('%d %b-%y')
+
+    runs = df[df['DateTicks'] == system_date].shape[0]
+except:
+    runs = 0
 
 # Create a label to display the message
 message_frame = ttk.Label(
-    window, text="Let's test those two-digit addition skills!", style="Message.TLabel")
+    window, text=f"Let's test those two-digit addition skills!\nSets Completed Today: {runs}", style="Message.TLabel")
 message_frame.pack(pady=10)
 
 # Create a frame to hold the grid
@@ -142,7 +155,8 @@ button_frame = ttk.Frame(window, style="FrameElements.TFrame")
 button_frame.pack()
 
 # Create a button to start the game
-start_button = ttk.Button(button_frame, text="New Game", command=start_game)
+start_button = ttk.Button(
+    button_frame, text="New Game", command=start_game)
 start_button.pack(side="left", padx=5)
 
 # Define the minimum and maximum grid sizes
