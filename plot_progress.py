@@ -40,7 +40,7 @@ sns.boxplot(x='Date', y='Time_per_Sum', data=df,
             palette=color_dict.values(), ax=ax)
 ax.set_title(
     f'Two-Digit Addition Speed | Current: {round(df["Time_per_Sum"].iloc[-1],1)} sec')
-ax.set_xticklabels(df['DateTicks'].unique(), rotation=45)
+ax.set_xticklabels(df['DateTicks'].unique(), rotation=90, fontdict = {'fontsize':6})
 
 # Set the background color of the plot area
 ax.spines['bottom'].set_color('white')
