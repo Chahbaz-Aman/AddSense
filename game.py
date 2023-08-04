@@ -8,6 +8,7 @@ from ttkthemes import ThemedStyle
 
 
 def check_answers():
+    global runs
     player_sums = [int(entry.get()) if entry.get().isnumeric()
                    else 9999 for entry in entries]
     totals_row = [x+y for x in row_indices for y in column_headers]
@@ -45,6 +46,8 @@ def check_answers():
             with open("log_file.csv", "w", newline="") as file:
                 writer = csv.writer(file)
                 writer.writerow(log_data)
+
+        runs += 1
     else:
         wrong[0].delete(0, '')
         wrong[0].focus()
