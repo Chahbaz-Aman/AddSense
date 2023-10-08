@@ -24,10 +24,18 @@ df['DateTicks'] = df['DateTime'].dt.strftime('%d %b-%y')
 df['Date'] = df['DateTime'].apply(lambda d: d.date())
 
 
+# Filter data for the first 10 days and the last 10 days
+if df.shape[0] > 30:
+    first_10_days = df['Date'].unique()[:10]
+    last_20_days = df['Date'].unique()[-20:]
+    filtered_df = df[df['Date'].isin(first_10_days) | df['Date'].isin(last_20_days)]
+else:
+    filtered_df = df
+
 # In[86]:
 
 
-medians = df.groupby('Date')['Time_per_Sum'].median().sort_values()
+medians = filtered_df.groupby('Date')['Time_per_Sum'].median().sort_values()
 color_palette = sns.color_palette("coolwarm_r", n_colors=len(medians))
 color_dict = {median: color for median, color in zip(medians, color_palette)}
 
@@ -36,11 +44,11 @@ color_dict = {median: color for median, color in zip(medians, color_palette)}
 
 
 _, ax = plt.subplots(1, 1, figsize=(10, 5))
-sns.boxplot(x='Date', y='Time_per_Sum', data=df,
+sns.boxplot(x='Date', y='Time_per_Sum', data=filtered_df,
             palette=color_dict.values(), ax=ax)
 ax.set_title(
     f'Two-Digit Addition Speed | Current: {round(df["Time_per_Sum"].iloc[-1],1)} sec')
-ax.set_xticklabels(df['DateTicks'].unique(), rotation=90, fontdict = {'fontsize':6})
+ax.set_xticklabels(filtered_df['DateTicks'].unique(), rotation=90, fontdict = {'fontsize':6})
 
 # Set the background color of the plot area
 ax.spines['bottom'].set_color('white')
